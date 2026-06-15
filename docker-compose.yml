@@ -1,0 +1,134 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: studybridge-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_DATABASE: studybridge
+      TZ: Asia/Seoul
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot1234"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: studybridge-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+  study-service:
+    build: ./study-service
+    image: kanghyeongu00/studybridge-study-service:latest
+    environment:
+      JAVA_TOOL_OPTIONS: -XX:MaxRAM=256m -XX:+UseSerialGC -Dfile.encoding=UTF-8
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/studybridge?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root1234
+    ports:
+      - "8081:8081"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  comment-service:
+    build: ./comment-service
+    image: kanghyeongu00/studybridge-comment-service:latest
+    environment:
+      JAVA_TOOL_OPTIONS: -XX:MaxRAM=256m -XX:+UseSerialGC -Dfile.encoding=UTF-8
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/studybridge?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root1234
+    ports:
+      - "8083:8083"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  apply-service:
+    build: ./apply-service
+    image: kanghyeongu00/studybridge-apply-service:latest
+    environment:
+      JAVA_TOOL_OPTIONS: -XX:MaxRAM=256m -XX:+UseSerialGC -Dfile.encoding=UTF-8
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/studybridge?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root1234
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin123
+    ports:
+      - "8082:8082"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
+  notification-service:
+    build: ./notification-service
+    image: kanghyeongu00/studybridge-notification-service:latest
+    environment:
+      JAVA_TOOL_OPTIONS: -XX:MaxRAM=256m -XX:+UseSerialGC -Dfile.encoding=UTF-8
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/studybridge?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root1234
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin123
+    ports:
+      - "8085:8085"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
+  client-service:
+    build: ./client-service
+    image: kanghyeongu00/studybridge-client-service:latest
+    environment:
+      JAVA_TOOL_OPTIONS: -XX:MaxRAM=256m -XX:+UseSerialGC -Dfile.encoding=UTF-8
+      SERVICES_STUDY_URL: http://study-service:8081
+    ports:
+      - "8084:8084"
+    depends_on:
+      - study-service
+
+  gateway-service:
+    build: ./gateway-service
+    image: kanghyeongu00/studybridge-gateway-service:latest
+    environment:
+      JAVA_TOOL_OPTIONS: -XX:MaxRAM=256m -XX:+UseSerialGC -Dfile.encoding=UTF-8
+    ports:
+      - "8080:8080"
+    depends_on:
+      - study-service
+      - comment-service
+      - apply-service
+      - notification-service
+      - client-service
+
+  frontend:
+    build: ./frontend
+    image: kanghyeongu00/studybridge-frontend:latest
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway-service
+
+volumes:
+  mysql-data:
+  rabbitmq-data:

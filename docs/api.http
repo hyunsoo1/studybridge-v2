@@ -1,0 +1,24 @@
+### Gateway study CRUD
+GET http://localhost:8080/api/studies
+
+### Create application and publish RabbitMQ event
+POST http://localhost:8080/api/applications
+Content-Type: application/json
+
+{
+  "studyId": 1,
+  "studyTitle": "정보처리기사 실기 스터디",
+  "applicantName": "강현구",
+  "message": "기출문제를 함께 풀고 싶습니다.",
+  "availableTime": "화/목 오후 8시",
+  "level": "초급"
+}
+
+### RestTemplate call
+GET http://localhost:8080/client/resttemplate/studies
+
+### OpenFeign call
+GET http://localhost:8080/client/openfeign/studies
+
+### Flux stream
+GET http://localhost:8080/notifications/flux
