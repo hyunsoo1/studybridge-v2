@@ -30,4 +30,4 @@ jobs:
         with:
           context: ./${{ matrix.service }}
           push: true
-          tags: hyunsoo1/studybridge-${{ matrix.service }}:latest
+          tags: jinn2254/studybridge-${{ matrix.service }}:latest

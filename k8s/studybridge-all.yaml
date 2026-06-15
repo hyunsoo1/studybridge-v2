@@ -140,7 +140,7 @@ spec:
     spec:
       containers:
         - name: study-service
-          image: kanghyeongu00/studybridge-study-service:latest
+          image: jinn2254/studybridge-study-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
@@ -180,7 +180,7 @@ spec:
     spec:
       containers:
         - name: comment-service
-          image: kanghyeongu00/studybridge-comment-service:latest
+          image: jinn2254/studybridge-comment-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8083
@@ -220,7 +220,7 @@ spec:
     spec:
       containers:
         - name: apply-service
-          image: kanghyeongu00/studybridge-apply-service:latest
+          image: jinn2254/studybridge-apply-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8082
@@ -266,7 +266,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: kanghyeongu00/studybridge-notification-service:latest
+          image: jinn2254/studybridge-notification-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8085
@@ -312,7 +312,7 @@ spec:
     spec:
       containers:
         - name: client-service
-          image: kanghyeongu00/studybridge-client-service:latest
+          image: jinn2254/studybridge-client-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8084
@@ -348,7 +348,7 @@ spec:
     spec:
       containers:
         - name: gateway-service
-          image: kanghyeongu00/studybridge-gateway-service:latest
+          image: jinn2254/studybridge-gateway-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
@@ -383,7 +383,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: kanghyeongu00/studybridge-frontend:latest
+          image: jinn2254/studybridge-frontend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
